@@ -1,0 +1,3 @@
+class SetCamera{}
+
+class SetGallery{}
