@@ -21,8 +21,7 @@ import FileProviderUI
     
     func shareFile(_ sharedItems: Any?, with controller: UIViewController) {
         let filePath = sharedItems as! String
-        let docPath = getDocumentsDirectory().appendingPathComponent(filePath)
-        let imageURL = URL(fileURLWithPath: docPath.path)
+        let imageURL = URL(fileURLWithPath: filePath)
     
         guard let imageData = try? Data(contentsOf: imageURL) else {return}
         guard let image = UIImage(data: imageData) else {return}

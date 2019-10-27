@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:honoo/ViewModel/HonooListViewModel.dart';
 import 'package:honoo/Model/Honoo.dart';
 import 'package:redux/redux.dart';
-import 'package:honoo/TransparentRoute.dart';
+import 'package:screenshot/screenshot.dart';
 
 class MyHonoo extends StatefulWidget {
   _MyHonooState createState() => _MyHonooState();
@@ -48,7 +48,7 @@ class EmptyView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
+        children: [
           Flexible(
             flex: 3,
             child: Container(
@@ -71,6 +71,7 @@ class EmptyView extends StatelessWidget {
 
 class _ListViewCell extends StatelessWidget {
   final Honoo honoo;
+  ScreenshotController controller = ScreenshotController();
   _ListViewCell({@required this.honoo});
   @override
   Widget build(BuildContext context) {
@@ -87,7 +88,10 @@ class _ListViewCell extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children:[
               GestureDetector(
-                child:HonooCard(honoo: honoo),
+                child: Screenshot(
+                  child: HonooCard(honoo: honoo),
+                  controller: controller,
+                ),
                 onTap: () {
                   Navigator.push(context,
                     MaterialPageRoute(builder: (context) => HonooDetailView(honoo: this.honoo))
@@ -111,15 +115,14 @@ class _ListViewCell extends StatelessWidget {
                       //TODO: Navigation to editing page
                     },
                     iconSize: 35,
-
                   ),
                   IconButton(
                     icon: Icon(Icons.share),
                     iconSize: 35,
-                    onPressed: () async {
-                        //TODO: Show share sheet
-                      var image = "assets/logotype.png";
-                      await _shareImage(image);
+                    onPressed: ()  {
+                      controller.capture(pixelRatio: 1.5).then((File fileImage) {
+                        _shareImage(fileImage.path);
+                      });
                     },
                   )
                 ],
@@ -132,22 +135,7 @@ class _ListViewCell extends StatelessWidget {
 }
 
 
-void _shareImage(image) async {
-
-  try {
-
-    final ByteData bytes = await rootBundle.load(image);
-    final Uint8List list = bytes.buffer.asUint8List();
-
-    final tmpDir = await getApplicationDocumentsDirectory();
-    final file = await File("${tmpDir.path}/logotype.png").create();
-    file.writeAsBytesSync(list);
-
-    final channel = MethodChannel("channel:honoo.share/share");
-    channel.invokeMethod("shareFile", "logotype.png");
-
-  } catch (e) {
-
-   FlutterError(e.toString());
-  }
+void _shareImage(imagePath) async {
+  final channel = MethodChannel("channel:honoo.share/share");
+  channel.invokeMethod("shareFile", imagePath);
 }
