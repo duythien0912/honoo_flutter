@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -36,6 +36,7 @@ dependencies:
 
   screenshot: ^0.1.1
 
+  tuple: ^1.0.3
 
 
 dev_dependencies:
@@ -63,6 +64,8 @@ flutter:
   assets:
     - assets/uploadIcon.png
     - assets/logotype.png
+    - assets/honooIcon.png
+    - assets/photo-camera.png
 
 
   fonts:

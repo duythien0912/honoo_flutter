@@ -44,23 +44,12 @@ class EmptyView extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withAlpha(60)
+
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Flexible(
-            flex: 3,
-            child: Container(
-              child: Image.asset('assets/honooIcon.png', fit: BoxFit.fill),
-            ),
-          ),
-          Flexible(
-            flex: 1,
-            child: Text("Non hai ancora realizzato alcun honoo",textAlign: TextAlign.center,)
-          ),
-        ],
+      child: Center(
+        child: Text("Non hai ancora realizzato alcun honoo",textAlign: TextAlign.center),
       ),
+
     );
   }
 }
@@ -120,7 +109,7 @@ class _ListViewCell extends StatelessWidget {
                     icon: Icon(Icons.share),
                     iconSize: 35,
                     onPressed: ()  {
-                      controller.capture(pixelRatio: 1.5).then((File fileImage) {
+                      controller.capture(pixelRatio: 5).then((File fileImage) {
                         _shareImage(fileImage.path);
                       });
                     },

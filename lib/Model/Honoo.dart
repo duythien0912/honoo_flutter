@@ -7,8 +7,9 @@ class Honoo {
   final String text;
   final File photo;
   final Theme theme;
+  String info;
 
-  Honoo({this.text, this.photo, this.theme});
+  Honoo({this.text, this.photo, this.theme,this.info});
 
   @override
   String toString() {

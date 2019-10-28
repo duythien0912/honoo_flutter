@@ -1,9 +1,5 @@
-import 'dart:ffi';
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:honoo/Model/AppState.dart';
 import 'package:honoo/Model/Honoo.dart' as prefix0;
 import 'package:honoo/View/NewHonoo.dart';
@@ -15,10 +11,7 @@ import 'Reducers/AppReducer.dart';
 import 'Model/Honoo.dart';
 import 'ViewModel/HonooViewModel.dart';
 import 'package:honoo/Reducers/Actions/HonooListActions.dart';
-import 'dart:math';
 import 'View/ProfilePage.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 
 void main() => runApp(MyApp());
@@ -37,7 +30,14 @@ class MyApp extends StatelessWidget {
         appReducer,
         initialState: AppState(
             currentHonoo: Honoo(theme: prefix0.Theme.light),
-            myHonoos: []),
+            myHonoos: [],
+            userData: User(
+              name: "",
+              contacts: {'email':'','telegram':'','telephone':''},
+
+            ),
+            settings: {"includeInfo": false}
+        ),
         middleware: []
     );
 
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          /*
+
           /// PROFILO UTENTE CON FOTO E DATI PERSONALI DELLO STUDENTE
 
           BottomNavigationBarItem(
@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                     bottom: 5
                 )
             ),
-          )*/
+          )
 
         ],
         onTap: (index) {
@@ -192,7 +192,7 @@ class MyIconButton extends StatelessWidget {
                       FlatButton(
                         onPressed: () => callback(honoo),
                         child: Text("Salva",
-                            style: TextStyle(fontWeight: FontWeight.w700,color: Colors.black)),
+                            style: TextStyle(fontWeight: FontWeight.w700)),
                       ),
                     ],
                   );
@@ -211,7 +211,7 @@ class MyIconButton extends StatelessWidget {
         return IconButton(
           icon: Icon(Icons.favorite),
           iconSize: 25,
-          onPressed: () => _showDialog(context, Honoo(text: model.text,photo: model.image,theme: model.theme)),
+          onPressed: () => _showDialog(context, Honoo(text: model.text,photo: model.image,theme: model.theme,info:"")),
         );
       },
     );

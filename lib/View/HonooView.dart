@@ -328,7 +328,7 @@ class ImageButton extends StatelessWidget {
 
       builder: (BuildContext context, VoidCallback callback) {
         return GestureDetector(
-          child: Image.file(image,fit: BoxFit.fill,),
+          child: Image.file(image,fit: BoxFit.cover,),
           onTap: callback,
         );
       }
