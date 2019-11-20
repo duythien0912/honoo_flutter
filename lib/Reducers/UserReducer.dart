@@ -7,7 +7,8 @@ User userReducer(User user, action) {
     return User(
       name: user.name,
       contacts: user.contacts,
-      profilePic: action.pic
+      profilePic: action.pic,
+      profilePicURL: user.profilePicURL
     );
   } else
 
@@ -18,7 +19,8 @@ User userReducer(User user, action) {
     return User(
         name: user.name,
         contacts: contacts,
-        profilePic: user.profilePic
+        profilePic: user.profilePic,
+        profilePicURL: user.profilePicURL
     );
   } else
 
@@ -26,7 +28,8 @@ User userReducer(User user, action) {
     return User(
         name: action.name,
         contacts: user.contacts,
-        profilePic: user.profilePic
+        profilePic: user.profilePic,
+        profilePicURL: user.profilePicURL
     );
   } else {
     return user;

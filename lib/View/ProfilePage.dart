@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,62 +10,90 @@ import 'package:honoo/ViewModel/ProfilePageViewModel.dart';
 import 'package:honoo/Model/AppState.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tuple/tuple.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ProfilePage extends StatefulWidget {
+
   _ProfilePageState createState() => _ProfilePageState();
+  static Widget getImageWidget(ProfilePageViewModel model) {
+    if (model.profilePic == null && model.photoURL == null) return Image.asset(
+        'assets/photo-camera.png', fit: BoxFit.scaleDown, scale: 6);
+    if (model.profilePic == null) return FutureBuilder(
+      future: () async {
+        var dir = Directory.systemTemp;
+        var file = File("${dir.path}/${model.photoURL}");
+        FirebaseStorage.instance.ref().child("profilePics").child(
+            model.photoURL).writeToFile(file);
+        return file;
+      }(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Image.file(snapshot.data, fit: BoxFit.cover);
+        } else if (snapshot.connectionState == ConnectionState.none) {
+          return Image.asset("assets/noConnection.png", fit: BoxFit.cover);
+        } else if (snapshot.hasError) {
+          throw FlutterError("${snapshot.error}");
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    );
+    return Image.file(model.profilePic, fit: BoxFit.cover);
+  }
 }
-
-
 
 
 class _ProfilePageState extends State<ProfilePage> {
   double height = 600;
   var scrollController = ScrollController();
   var nameFocusNode;
-  var mailFocusNode ;
+  var mailFocusNode;
+
   var phoneFocusNode;
   var telegramFocusNode;
 
   @override
   void initState() {
-
     nameFocusNode = FocusNode();
     mailFocusNode = FocusNode();
-    phoneFocusNode= FocusNode();
+    phoneFocusNode = FocusNode();
     telegramFocusNode = FocusNode();
 
 
     nameFocusNode.addListener(() {
-      if(nameFocusNode.hasFocus) {
+      if (nameFocusNode.hasFocus) {
         setState(() {
           height = 800;
         });
-        scrollController.animateTo(60, duration: Duration(milliseconds: 300) , curve: Curves.easeInOut);
+        scrollController.animateTo(
+            60, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
       }
-
     });
     mailFocusNode.addListener(() {
-      if(mailFocusNode.hasFocus) {
+      if (mailFocusNode.hasFocus) {
         setState(() {
           height = 800;
         });
-        scrollController.animateTo(80, duration: Duration(milliseconds: 300) , curve: Curves.easeInOut);
+        scrollController.animateTo(
+            80, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
       }
     });
     phoneFocusNode.addListener(() {
-      if(phoneFocusNode.hasFocus) {
+      if (phoneFocusNode.hasFocus) {
         setState(() {
           height = 800;
         });
-        scrollController.animateTo(100, duration: Duration(milliseconds: 300) , curve: Curves.easeInOut);
+        scrollController.animateTo(100, duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut);
       }
     });
     telegramFocusNode.addListener(() {
-      if(telegramFocusNode.hasFocus){
+      if (telegramFocusNode.hasFocus) {
         setState(() {
           height = 800;
         });
-        scrollController.animateTo(120, duration: Duration(milliseconds: 300) , curve: Curves.easeInOut);
+        scrollController.animateTo(120, duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut);
       }
     });
     super.initState();
@@ -71,152 +101,168 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState,Function>(
-      converter: (Store<AppState> store) {
-        return (action) {
-          store.dispatch(action);
-        };
-      },
+    return StoreConnector<AppState, Function>(
+        converter: (Store<AppState> store) {
+          return (action) {
+            store.dispatch(action);
+          };
+        },
 
-      builder: (BuildContext context, Function callback) {
-        return StoreConnector<AppState, ProfilePageViewModel>(
-          converter: ProfilePageViewModel.fromStore,
-          builder: (BuildContext context, ProfilePageViewModel model) {
-            var nameController = TextEditingController(text: model.name ?? "");
-            var mailController = TextEditingController(text: model.contacts['email'] ?? "");
-            var phoneController =  TextEditingController(text: model.contacts["telephone"] ?? "");
-            var telegramController = TextEditingController(text: model.contacts["telegram"] ?? "");
+        builder: (BuildContext context, Function callback) {
+          return StoreConnector<AppState, ProfilePageViewModel>(
+              converter: ProfilePageViewModel.fromStore,
+              builder: (BuildContext context, ProfilePageViewModel model) {
+                var nameController = TextEditingController(
+                    text: model.name ?? "");
+                var mailController = TextEditingController(
+                    text: model.contacts['email'] ?? "");
+                var phoneController = TextEditingController(
+                    text: model.contacts["telephone"] ?? "");
+                var telegramController = TextEditingController(
+                    text: model.contacts["telegram"] ?? "");
 
 
-            return Scaffold(
-              body: SingleChildScrollView(
-                controller: scrollController,
-                child: Container(
-                  height: height,
-                  child: Padding(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(padding: EdgeInsets.only(top: 10,bottom: 10)),
+                return Scaffold(
+                  body: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Container(
+                        height: height,
+                        child: Padding(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                            Padding(padding: EdgeInsets.only(top: 10,
+                                bottom: 10)),
                         Container(
-                          width: 200,
-                          height: 200,
-                          child: InkWell(
-                            child: model.profilePic != null ? Image.file(model.profilePic,fit: BoxFit.cover) : Image.asset('assets/photo-camera.png',fit: BoxFit.scaleDown,scale: 6),
-                            onTap: () async {
-                              callback(ChangeProfilePic(pic: await ImagePicker.pickImage(source: ImageSource.gallery)));
-                            },
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white,width: 1),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black45,
-                                  spreadRadius: 5,
-                                  blurRadius: 10
-                              )
-                            ]
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.only(bottom: 10)),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: "Nome",
-                            focusColor: Colors.black
-                          ),
-
-                          onSubmitted: (text) {
-                            FocusScope.of(context).requestFocus(mailFocusNode);
-                            callback(ChangeName(name: text));
-                          },
-                          controller: nameController,
-                          focusNode: nameFocusNode,
-                          textCapitalization: TextCapitalization.words,
-                          textInputAction: TextInputAction.done,
-
-                        ),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: "email",
-                            focusColor: Colors.black
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                          focusNode: mailFocusNode,
-                          onSubmitted: (text){
-                            FocusScope.of(context).requestFocus(phoneFocusNode);
-                            callback(ChangeContact(contact: Tuple2<String,String>('email',text)));
-                          },
-
-                          controller: mailController,
-                          textCapitalization: TextCapitalization.none,
-                          textInputAction: TextInputAction.done,
-                        ),
-
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: "Telefono",
-                            focusColor: Colors.black,
-
-                          ),
-
-                          onSubmitted: (text) {
-                            FocusScope.of(context).requestFocus(telegramFocusNode);
-                            callback(ChangeContact(contact: Tuple2<String,String>('telephone',text)));
-                          },
-
-                          focusNode: phoneFocusNode,
-                          controller: phoneController,
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.done,
-                        ),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: "Telegram",
-                            focusColor: Colors.black,
-                          ),
-                          onSubmitted: (text) {
-                            setState(() {
-                              height = 600;
-                            });
-                            callback(ChangeContact(contact: Tuple2<String,String>('telegram',text)));
-                          },
-                          focusNode: telegramFocusNode,
-                          controller: telegramController,
-                          textCapitalization: TextCapitalization.none,
-                          textInputAction: TextInputAction.done,
-                        ),
-                        Padding(padding: EdgeInsets.only(top: 10,bottom: 10)),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text("Includi info nei tuoi honoo",style: TextStyle(fontSize: 14),),
-                            Switch(
-                              value: model.settings["includeInfo"],
-                              activeColor: Colors.red,
-                              onChanged: (value){
-                                callback(ChangeSetting(setting: Tuple2<String,dynamic>('includeInfo',value)));
+                            width: 200,
+                            height: 200,
+                            child: InkWell(
+                              child: ProfilePage.getImageWidget(model),
+                              onTap: () async {
+                                callback(ChangeProfilePic(
+                                    pic: await ImagePicker.pickImage(
+                                        source: ImageSource.gallery)));
                               },
-                            )
-                          ],
-                        )
-
-                      ],
+                            ),
+                            decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white, width: 1),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black45,
+                              spreadRadius: 5,
+                              blurRadius: 10
+                          )
+                        ]
                     ),
-                    padding: EdgeInsets.all(20),
+                  ),
+                  Padding(padding: EdgeInsets.only(bottom: 10)),
+                  TextField(
+                    decoration: InputDecoration(
+                        labelText: "Nome",
+                        focusColor: Colors.black
+                    ),
+
+                    onSubmitted: (text) {
+                      FocusScope.of(context).requestFocus(mailFocusNode);
+                      callback(ChangeName(name: text));
+                    },
+                    controller: nameController,
+                    focusNode: nameFocusNode,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.done,
+
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                        labelText: "email",
+                        focusColor: Colors.black
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    focusNode: mailFocusNode,
+                    onSubmitted: (text) {
+                      FocusScope.of(context).requestFocus(phoneFocusNode);
+                      callback(ChangeContact(
+                          contact: Tuple2<String, String>('email', text)));
+                    },
+
+                    controller: mailController,
+                    textCapitalization: TextCapitalization.none,
+                    textInputAction: TextInputAction.done,
+                  ),
+
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: "Telefono",
+                      focusColor: Colors.black,
+
+                    ),
+
+                    onSubmitted: (text) {
+                      FocusScope.of(context).requestFocus(telegramFocusNode);
+                      callback(ChangeContact(
+                          contact: Tuple2<String, String>('telephone', text)));
+                    },
+
+                    focusNode: phoneFocusNode,
+                    controller: phoneController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: "Telegram",
+                      focusColor: Colors.black,
+                    ),
+                    onSubmitted: (text) {
+                      setState(() {
+                        height = 600;
+                      });
+                      callback(ChangeContact(
+                          contact: Tuple2<String, String>('telegram', text)));
+                    },
+                    focusNode: telegramFocusNode,
+                    controller: telegramController,
+                    textCapitalization: TextCapitalization.none,
+                    textInputAction: TextInputAction.done,
+                  ),
+                  Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text("Includi info nei tuoi honoo",
+                        style: TextStyle(fontSize: 14),),
+                      Switch(
+                        value: model.settings["includeInfo"],
+                        activeColor: Colors.red,
+                        onChanged: (value) {
+                          callback(ChangeSetting(setting: Tuple2<String,
+                              dynamic>('includeInfo', value)));
+                        },
+                      )
+                    ],
                   )
+
+                  ],
                 ),
-              ),
-              resizeToAvoidBottomPadding: false,
-            );
-          }
-        );
-      }
+                padding: EdgeInsets.all(20),
+                )
+                ),
+                ),
+                resizeToAvoidBottomPadding: false,
+                );
+              }
+          );
+        }
     );
   }
+
+
+
+
 }
 
 

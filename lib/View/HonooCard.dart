@@ -2,10 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:honoo/Model/Honoo.dart' as Honoo;
+import 'package:honoo/View/ProfilePage.dart';
 import 'package:honoo/ViewModel/HonooViewModel.dart';
 import 'package:honoo/Model/AppState.dart';
 import 'package:honoo/ViewModel/ProfilePageViewModel.dart';
 import 'dart:math';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 
@@ -48,17 +51,16 @@ class HonooCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              if(model.settings["includeInfo"] && model.profilePic != null && honoo.info != null)
+              if(model.settings["includeInfo"] && (model.profilePic != null || model.photoURL != null) && honoo.info != null)
                Padding(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if(model.profilePic!=null)
                         Container(
                           width: 70,
                           height: 70,
-                          child: Image.file(model.profilePic,fit: BoxFit.cover),
+                          child: ProfilePage.getImageWidget(model),
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color:  themeColor(),
@@ -155,7 +157,7 @@ class HonooCard extends StatelessWidget {
                   flex: 3,
                   child: Padding(
                       child: Container(
-                        child: Image.file(honoo.photo,fit: BoxFit.cover),
+                        child: HonooImage(honoo),
                         decoration: BoxDecoration(
                             border: Border.all(
                               color:themeColor()
@@ -170,5 +172,32 @@ class HonooCard extends StatelessWidget {
       },
 
     );
+    
   }
+  
+}
+
+Widget HonooImage (honoo) {
+  if (honoo.photo == null && honoo.photoURL == null) return Image.asset('assets/photo-camera.png',fit: BoxFit.scaleDown,scale: 6);
+  if (honoo.photo == null) return FutureBuilder(
+    future: () async {
+      var dir = Directory.systemTemp;
+      var file = File("${dir.path}/${honoo.photoURL}");
+      FirebaseStorage.instance.ref().child("honoo").child(honoo.photoURL).writeToFile(file);
+      return file;
+    }(),
+    builder: (context,snapshot){
+      if (snapshot.connectionState == ConnectionState.done) {
+        return Image.file(snapshot.data,fit: BoxFit.cover);
+      } else if (snapshot.connectionState == ConnectionState.none) {
+        return Image.asset("assets/noConnection.png",fit: BoxFit.cover);
+      } else if (snapshot.hasError) {
+        throw FlutterError("${snapshot.error}");
+      } else {
+        return CircularProgressIndicator();
+      }
+
+    },
+  );
+  return Image.file(honoo.photo,fit:BoxFit.cover);
 }

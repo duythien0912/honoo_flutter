@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "650734059056",
+    "firebase_url": "https://honoo-f0502.firebaseio.com",
+    "project_id": "honoo-f0502",
+    "storage_bucket": "honoo-f0502.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650734059056:android:b1a8f3672b8e82c94fb7f5",
+        "android_client_info": {
+          "package_name": "com.example.honoo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "650734059056-sm9m1ftji1r6tdebvvh4fi50pd34sc5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSJYu54f77hjtZGmYpSdoLmHV76HrxCGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "650734059056-sm9m1ftji1r6tdebvvh4fi50pd34sc5i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "650734059056-al23rutbc1rtnb3ta06f126eb4t1simo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "abana.micheledesena.honoo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

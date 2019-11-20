@@ -12,13 +12,41 @@ import 'Model/Honoo.dart';
 import 'ViewModel/HonooViewModel.dart';
 import 'package:honoo/Reducers/Actions/HonooListActions.dart';
 import 'View/ProfilePage.dart';
+import 'package:redux_persist/redux_persist.dart';
+import 'package:redux_persist_flutter/redux_persist_flutter.dart';
+import 'package:honoo/middlewares/FireStorageMiddleware.dart';
 
 
-void main() => runApp(MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final persistor = Persistor<AppState>(
+    storage: FlutterStorage(),
+    serializer: JsonSerializer<AppState>(AppState.fromJson),
+    debug: true,
+    throttleDuration: Duration(seconds:1),
+  );
+
+  final initialState = await persistor.load();
+
+
+  final  store = new Store<AppState> (
+      appReducer,
+      initialState: initialState ?? AppState.voidState,
+      middleware: [createFireStorageMiddleware(),persistor.createMiddleware()]
+  );
+
+  runApp(MyApp(store: store));
+
+
+
+}
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-
+  MyApp({this.store});
 
   Store store;
 
@@ -26,20 +54,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
 
-    store = new Store<AppState> (
-        appReducer,
-        initialState: AppState(
-            currentHonoo: Honoo(theme: prefix0.Theme.light),
-            myHonoos: [],
-            userData: User(
-              name: "",
-              contacts: {'email':'','telegram':'','telephone':''},
 
-            ),
-            settings: {"includeInfo": false}
-        ),
-        middleware: []
-    );
 
     return StoreProvider<AppState> (
 
@@ -71,12 +86,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   var pages = [
-    MyHonoo(),
     NewHonoo(),
+    MyHonoo(),
     ProfilePage()
   ];
 
-  var selectedIndex = 1;
+  var selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -84,7 +99,7 @@ class _HomePageState extends State<HomePage> {
 
       appBar: AppBar(
         actions: <Widget>[
-         selectedIndex == 1 ?  MyIconButton() : Container()
+         selectedIndex == 0 ?  MyIconButton() : Container()
         ],
         title: Padding(
             child:Image.asset('assets/logotype.png',fit: BoxFit.cover),
@@ -100,28 +115,29 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            title: Text("", style: TextStyle(color: selectedIndex == 0 ? Colors.white : Colors.grey)),
+            title: Text("",style: TextStyle(color: selectedIndex == 0 ? Colors.white : Colors.grey)),
             icon: Padding(
-                child: Icon(Icons.favorite,color: selectedIndex == 0 ? Colors.white : Colors.grey,size:30),
+                child: Icon(CustomIcons.fire,color: selectedIndex == 0 ? Colors.white : Colors.grey,size:30),
                 padding: EdgeInsets.only(
                     bottom: 5
                 )
             ),
           ),
           BottomNavigationBarItem(
-            title: Text("",style: TextStyle(color: selectedIndex == 1 ? Colors.white : Colors.grey)),
+            title: Text("", style: TextStyle(color: selectedIndex == 1 ? Colors.white : Colors.grey)),
             icon: Padding(
-                child: Icon(CustomIcons.fire,color: selectedIndex == 1 ? Colors.white : Colors.grey,size:30),
+                child: Icon(Icons.favorite,color: selectedIndex == 1 ? Colors.white : Colors.grey,size:30),
                 padding: EdgeInsets.only(
                     bottom: 5
                 )
             ),
           ),
+
 
 
           /// PROFILO UTENTE CON FOTO E DATI PERSONALI DELLO STUDENTE
 
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             title: Text(""),
             icon: Padding(
                 child: Icon(Icons.person,color: selectedIndex == 2 ? Colors.white : Colors.grey,size:30),
@@ -129,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                     bottom: 5
                 )
             ),
-          )
+          )*/
 
         ],
         onTap: (index) {
