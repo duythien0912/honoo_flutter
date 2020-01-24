@@ -31,9 +31,9 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-dependencies {
-    apply plugin: 'announce'
-    apply plugin: 'idea'
+// dependencies {
+//     apply plugin: 'announce'
+//     apply plugin: 'idea'
 
-}
+// }
 
