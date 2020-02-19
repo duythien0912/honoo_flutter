@@ -7,7 +7,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import android.content.Intent
 import java.io.File
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 
 
 
